@@ -1,0 +1,51 @@
+--- 
+apiVersion: batch/v1
+kind: Job
+metadata: 
+  name: caffe-migu-training
+spec: 
+  template: 
+    metadata: 
+      name: caffe-migu-training
+    spec: 
+      containers: 
+        - 
+          command: 
+            - /workdir/script/train.sh
+          env: 
+            - 
+              name: AWS_ACCESS_KEY_ID
+              value: "ewogICAgIlJHV19UT0tFTiI6IHsKICAgICAgICAidmVyc2lvbiI6IDEsCiAgICAgICAgInR5cGUiOiAibGRhcCIsCiAgICAgICAgImlkIjogImhhZG9vcCIsCiAgICAgICAgImtleSI6ICJoYWRvb3AiCiAgICB9Cn0K"
+            - 
+              name: AWS_SECRET_ACCESS_KEY
+              value: ""
+            - 
+              name: S3_ENDPOINT
+              value: "10.1.86.14"
+            - 
+              name: PORT
+              value: "8080" 
+            - 
+              name: BUCKET_NAME
+              value: "junzhang22" 
+            - 
+              name: UID
+              value: "MNIST"
+          image: "python-boto:2.48.0" #TODO -- Change the image to real training one
+          imagePullPolicy: Never
+          name: caffe-migu-training
+          resources: 
+            limits: 
+              alpha.kubernetes.io/nvidia-gpu: 1
+          volumeMounts: 
+            - 
+              mountPath: /workdir
+              name: workdir
+      nodeSelector: 
+        kubernetes.io/hostname: test-86-081
+      restartPolicy: OnFailure
+      volumes: 
+        - 
+          hostPath: 
+            path: /data/junzhang22/CFonK8S/caffe_training
+          name: workdir
